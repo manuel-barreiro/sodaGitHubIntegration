@@ -1,0 +1,23 @@
+name: Scan for data quality
+
+on: pull_request
+jobs:
+  soda_scan:
+    runs-on: ubuntu-latest
+    name: Run Soda Scan
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Perform Soda Scan
+        uses: sodadata/soda-github-action@v1
+        env:
+          api_key_id: 33dddc59-c596-4971-9a21-1330d89667de
+          api_key_secret: TkHUb-_URL5naAmni_EmU2g2eiLQeWCNjd4Qj3S0H3W9mgZQ64J2Zg
+          username: sqlserver
+          password: secret123.
+        with:
+          soda_library_version: v1.0.4
+          data_source: adventureworks
+          configuration: ./configuration.yaml
+          checks: ./checks.yaml
