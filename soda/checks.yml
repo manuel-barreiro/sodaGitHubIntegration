@@ -1,0 +1,93 @@
+checks for dim_customer:
+
+# i. 4 different Validity Metrics
+- invalid_count(email_address) = 0:
+      valid format: email
+      name: Ensure values are formatted as email addresses
+- invalid_count(house_owner_flag) = 0:
+      valid values: ['0', '1']
+      name: Ensure values in this flag field are binary (yes or no)
+- invalid_percent(birt_date) < 5%:
+      valid regex: (0?[0-9]|1[012])[/](0?[0-9]|[12][0-9]|3[01])[/](0000|(19|20)?\d\d)
+      name: Ensure a max of 5% of invalid values for birth_date field
+- invalid_percent(marital_status) = 0:
+      valid max length: 1
+      filter: total_children = 0
+      name: Ensure marital status field does not contain invalid values, and applying in-check filter config.
+
+# ii. 4 different Numeric Metrics
+- duplicate_count(phone) = 0:
+      name: No duplicate phone numbers
+- duplicate_count(email_address):
+      warn: when > 5
+      fail: when >= 10 
+      name: Warn when there are more that 5 duplicate email addresses and fail when greater than 10.
+- max(number_cars_owned) < 10:
+      name: Max 10 cars
+- min_length(address_line1) = 3:
+      name: Ensure address field has correct values.
+
+# iii. 1 Reference Check
+- values in (geography_key) must exist in dim_geography (geography_key):
+      name: Check geography data references the same key in dim_geography table
+      samples limit: 20
+
+# iv. 1 Cross Check
+- row_count same as retail_customers in aws_postgres_retail:
+      name: Cross check customer datasets
+
+# v. 1 Distribution Check
+- distribution_difference(column_name, dro_name) > your_threshold:
+       method: chi_square
+       distribution reference file: ./distribution_reference.yml
+       sample: TABLESAMPLE BERNOULLI (50) REPEATABLE (61)
+
+
+# vi. 1 User-defined Check
+checks for dim_reseller:
+  - avg_order_span between 5 and 10:
+      name: average time between reseller order years
+      avg_order_span expression: AVG(last_order_year - first_order_year)
+
+        
+# vii. 1 Failed Rows Check
+checks for dim_customer:
+  - failed rows:
+      name: Failed rows with CTE
+      fail condition: total_children = '2' and number_cars_owned >= 3
+
+# viii. 1 Soda Suggest operation against one dataset. Choose at least 3 of the
+# suggested checks.
+
+#Below I paste the conntent of the automatically generated file sodacl_dim_customer_2023_08_29_10_50_57.yaml
+
+checks for dim_customer:
+
+  # Add a row count check - https://go.soda.io/suggest-rowcount
+  - row_count > 0
+  - anomaly score for row_count < default
+
+  # Add freshness check - https://go.soda.io/suggest-fresh
+  - freshness(date_first_purchase) < 19h
+
+  # Add missing value checks - https://go.soda.io/suggest-missing
+  - missing_count(customer_key) = 0
+  - missing_count(house_owner_flag) = 0
+
+  
+  - missing_count(last_name) = 0:
+      name: Ensure there are no null values in the Last Name column
+
+  - freshness(date_first_purchase) < 7d:
+      name: Data in this dataset is less than 7 days old
+
+
+#TEMPLATE USAGE
+checks for dim_customers:
+  - $template_for_customers:
+      parameters:
+        table: dim_customers
+      fail: when > 0
+
+
+

@@ -1,0 +1,18 @@
+# Connect to AdventureWorks example data source 
+# https://go.soda.io/connect-ds
+data_source adventureworks:
+  type: sqlserver
+  host: tcp:sqlserver-sodaagent1.database.windows.net
+  username: sqlserver
+  password: secret123.
+  database: AdventureWorks
+  schema: SalesLT
+  trusted_connection: false
+  encrypt: false 
+  trust_server_certificate: false
+  driver: ODBC Driver 18 for SQL Server
+# Connect to your Soda platform account 
+soda_cloud:
+  host: cloud.us.soda.io
+  api_key_id: 33dddc59-c596-4971-9a21-1330d89667de
+  api_key_secret: TkHUb-_URL5naAmni_EmU2g2eiLQeWCNjd4Qj3S0H3W9mgZQ64J2Zg
