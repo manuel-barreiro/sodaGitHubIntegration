@@ -27,7 +27,7 @@ checks for dim_customer:
 - min_length(address_line1) = 3:
       name: Ensure address field has correct values.
 
-# iii. 1 Reference Check
+# iii. 1 Reference Checkaa
 - values in (geography_key) must exist in dim_geography (geography_key):
       name: Check geography data references the same key in dim_geography table
       samples limit: 20
